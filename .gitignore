@@ -1,70 +1,24 @@
-# -----------------------------
-# .gitignore for JavaScript + Firebase (Vite) project
-# Tailored to common development, local emulator, and functions artifacts
-# Adjust as needed for your current development phase
-# -----------------------------
-
-# Node modules
-node_modules/
-
-# Env files - keep secrets out of the repo (local/dev envs)
-.env
-.env.*
-.env.local
-.env.production.local
-
 # Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-*.log
+lerna-debug.log*
 
-# Build / output folders
-/dist/
-/build/
-/.output/
-/.cache/
-.parcel-cache/
-/.vite/
+node_modules
+dist
+dist-ssr
+*.local
 
-# Coverage reports
-/coverage/
-
-# Vite types
-vite-env.d.ts
-
-# Firebase local emulator / state
-.firebase/
-firebase-debug.log*
-
-# Firebase Functions (local) - keep node_modules and local runtime config out
-functions/node_modules/
-functions/.runtimeconfig.json
-
-# Firebase exports / emulator data / backups
-firebase-export/
-firebase-data/
-*.firebaserc.local
-
-# System / Editor files
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-Thumbs.db
-.vscode/
-.idea/
-*.sublime-workspace
-
-# Temporary / OS generated files
-*.swp
-*~
-
-# Keys and secrets
-*.pem
-*.key
-*.crt
-secrets/
-
-# Misc
-/tmp/
-/.envrc
-
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
