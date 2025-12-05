@@ -1,38 +1,43 @@
+import Phaser, { Physics } from "phaser";
+
 import "./style.css";
-import Phaser from "phaser";
-
-const sizes = {
-  width: 500,
-  height: 500,
-};
-
-class GameScene extends Phaser.Scene {
-  constructor() {
-    super("scene-game");
-  }
-
-  preload() {}
-
-  create() {}
-
-  update() {}
-}
+import { StartScene } from "./scenes/StartScene";
+import { HomeScene } from "./scenes/HomeScene";
+import { CareScene } from "./scenes/CareScene";
+import { LoadingScreen } from "./scenes/LoadingScreen";
+import { TrainScene } from "./scenes/TrainScene";
+import { ExploreScene } from "./scenes/ExploreScene";
+import { PlayScene } from "./scenes/PlayScene";
 
 const config = {
   type: Phaser.WEBGL,
   title: "Digital Muse",
-  description: "",
-  width: sizes.width,
-  height: sizes.height,
-  canvas: gameCanvas,
+  description: "Virtual Pet Game",
+  canvas: document.getElementById("gameCanvas"),
+  scale: {
+    width: 800,
+    height: 600,
+  },
+  render: {
+    pixelArt: true,
+    antialias: false,
+    antialiasGL: false,
+  },
   physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: speedDown },
       debug: true,
     },
   },
-  scene: [GameScene],
+  scene: [
+    StartScene,
+    HomeScene,
+    CareScene,
+    TrainScene,
+    ExploreScene,
+    PlayScene,
+    LoadingScreen,
+  ],
 };
 
 const game = new Phaser.Game(config);
