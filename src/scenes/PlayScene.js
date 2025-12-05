@@ -1,5 +1,8 @@
 import { Cursor } from "../entities/Cursor.js";
 import { DefaultMenu } from "../entities/DefaultMenu.js";
+import { Chalkboard } from "../entities/Chalkboard.js";
+import { QuizSystem } from "../systems/QuizSystem.js";
+import { PetReactionSystem } from "../systems/PetReactionSystem.js";
 import { goToScene } from "../utils/sceneHelpers.js";
 
 export class PlayScene extends Phaser.Scene {
@@ -91,6 +94,13 @@ export class PlayScene extends Phaser.Scene {
           opts
         );
 
+        // Initialize pet reaction system
+        this.petReactionSystem = new PetReactionSystem(this, this.pet);
+        this.pet.reactionSystem = this.petReactionSystem;
+
+        // Setup idle reaction timer
+        this._scheduleNextIdleReaction();
+
         // Setup cursor-pet interaction
         // Use pointer coords so clicks only trigger when pointer is over the pet
         this.cursor.onCursorClick((cursor, pointer) => {
@@ -123,18 +133,94 @@ export class PlayScene extends Phaser.Scene {
       onOptionClick: (option) => {
         if (option === "Home") {
           goToScene(this, "HomeScene", { fade: true, fadeDuration: 400 });
-        } else if (option === "Stats") {
-          this.statsClipboard.show(this.petProfile);
-        } else if (option === "Medic") {
-          console.log("Medic option clicked");
+        } else if (option === "Quiz") {
+          this._startQuiz();
         }
       },
     });
+
+    // Initialize quiz system (but don't start it yet)
+    this.chalkboard = null;
+    this.quizSystem = null;
+  }
+
+  _scheduleNextIdleReaction() {
+    // Schedule next idle reaction between 10-30 seconds
+    const delay = Phaser.Math.Between(10000, 30000);
+    
+    if (this._idleReactionTimer) {
+      this._idleReactionTimer.remove();
+    }
+    
+    this._idleReactionTimer = this.time.delayedCall(delay, () => {
+      this._triggerIdleReaction();
+    });
+  }
+
+  _triggerIdleReaction() {
+    // Only trigger if scene is in neutral state (no active quiz)
+    if (this._isSceneNeutral() && this.petReactionSystem) {
+      this.petReactionSystem.quickReaction('idle');
+    }
+    
+    // Schedule next reaction
+    this._scheduleNextIdleReaction();
+  }
+
+  _isSceneNeutral() {
+    // Check if quiz is not active
+    return !(this.quizSystem && this.quizSystem.isActive);
+  }
+
+  _startQuiz() {
+    if (this.quizSystem && this.quizSystem.isActive) return;
+
+    // Create chalkboard if not exists
+    if (!this.chalkboard) {
+      this.chalkboard = new Chalkboard(this, {
+        width: 500,
+        height: 500,
+        y: this.cameras.main.centerY + 20,
+      });
+    }
+
+    // Create quiz system if not exists
+    if (!this.quizSystem) {
+      this.quizSystem = new QuizSystem(
+        this,
+        this.pet,
+        this.chalkboard,
+        this.petReactionSystem
+      );
+    }
+
+    // Start the quiz
+    this.quizSystem.startQuiz();
   }
   update(time, delta) {
     // Update logic for the scene
     if (this.pet && typeof this.pet.update === "function") {
       this.pet.update(time, delta);
+    }
+    if (this.petReactionSystem && typeof this.petReactionSystem.update === "function") {
+      this.petReactionSystem.update();
+    }
+  }
+
+  shutdown() {
+    // Clean up quiz system on scene shutdown
+    if (this.quizSystem) {
+      this.quizSystem.destroy();
+    }
+    if (this.chalkboard) {
+      this.chalkboard.destroy();
+    }
+    if (this._idleReactionTimer) {
+      this._idleReactionTimer.remove();
+      this._idleReactionTimer = null;
+    }
+    if (this.petReactionSystem) {
+      this.petReactionSystem.destroy();
     }
   }
 }

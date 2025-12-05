@@ -14,6 +14,9 @@ export class Pet {
     // attach profile (plain data object with name/stats)
     this.profile = profile;
 
+    // Optional reaction system (can be set after construction)
+    this.reactionSystem = null;
+
     // Add physics body for collisions/overlaps
     scene.physics.world.enable(this.sprite);
     this.sprite.body.setCollideWorldBounds(false); // cursor can go anywhere
@@ -78,7 +81,7 @@ export class Pet {
     if (!a.exists("pet_walk")) {
       a.create({
         key: "pet_walk",
-        frames: a.generateFrameNumbers("pet", { start: 2, end: 3 }),
+        frames: a.generateFrameNumbers("pet", { start: 0, end: 2 }),
         frameRate: 6,
         repeat: -1,
       });
@@ -86,7 +89,7 @@ export class Pet {
     if (!a.exists("pet_attack")) {
       a.create({
         key: "pet_attack",
-        frames: a.generateFrameNumbers("pet", { start: 4, end: 5 }),
+        frames: a.generateFrameNumbers("pet", { start: 0, end: 3 }),
         frameRate: 8,
         repeat: 0,
       });
@@ -94,7 +97,7 @@ export class Pet {
     if (!a.exists("pet_wounded")) {
       a.create({
         key: "pet_wounded",
-        frames: a.generateFrameNumbers("pet", { start: 6, end: 7 }),
+        frames: a.generateFrameNumbers("pet", { start: 0, end: 4 }),
         frameRate: 6,
         repeat: 0,
       });
@@ -423,8 +426,15 @@ export class Pet {
     if (direction !== 0 && this.sprite) {
       this.sprite.setFlipX(direction > 0);
     }
-    this._applyMoodAlignment(-10, -8);
-    this.playWounded();
+
+    // Trigger punishment reaction
+    if (this.reactionSystem) {
+      this.reactionSystem.quickReaction('punish');
+    } else {
+      this._applyMoodAlignment(-10, -8);
+      this.playWounded();
+    }
+
     if (this.scene.sound) {
       const sfx = this.scene.sound.get('SlapSfx') || this.scene.sound.add('SlapSfx');
       if (sfx) sfx.play({ volume: 0.9 });
@@ -433,8 +443,14 @@ export class Pet {
   }
 
   _applyReward() {
-    this._applyMoodAlignment(10, 8);
-    this.playAttack();
+    // Trigger reward reaction
+    if (this.reactionSystem) {
+      this.reactionSystem.quickReaction('reward');
+    } else {
+      this._applyMoodAlignment(10, 8);
+      this.playAttack();
+    }
+
     if (this.scene.sound) {
       const sfx = this.scene.sound.get('RubSfx') || this.scene.sound.add('RubSfx');
       if (sfx) sfx.play({ volume: 0.9 });

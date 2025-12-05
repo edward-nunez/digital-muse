@@ -41,5 +41,9 @@ open sources assets used:
 https://opengameart.org/content/punch-slap-n-kick
 https://opengameart.org/content/action-sounds
 https://opengameart.org/content/10-book-page-flips
+
 Software:
 BMFont https://www.angelcode.com/products/bmfont/
+
+Quiz Content: 
+ChatGPT

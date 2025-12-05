@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "dayjs": "^1.11.19",
-    "firebase": "^12.6.0",
+    "express": "^5.2.1",
     "phaser": "^4.0.0-rc.5",
     "uuid": "^13.0.0"
   }

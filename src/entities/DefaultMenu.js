@@ -90,11 +90,13 @@ export class DefaultMenu {
 
       // Button hover/click handlers
       btn.on("pointerover", () => {
+        if (!btn.input || !btn.input.enabled) return;
         btn.setFillStyle(this.hoverColor, this.hoverAlpha);
         txt.setColor(this.hoverTextColor);
       });
 
       btn.on("pointerout", () => {
+        if (!btn.input || !btn.input.enabled) return;
         btn.setFillStyle(this.buttonColor, this.buttonAlpha);
         txt.setColor(this.textColor);
       });
@@ -113,6 +115,20 @@ export class DefaultMenu {
    */
   setVisible(visible) {
     this.container.setVisible(visible);
+  }
+
+  /**
+   * Enable/disable all buttons (for modal dialogs)
+   */
+  setEnabled(enabled) {
+    this.buttons.forEach(({ btn, txt }) => {
+      btn.disableInteractive();
+      if (enabled) {
+        btn.setInteractive({ useHandCursor: true });
+      }
+      txt.setAlpha(enabled ? 1 : 0.5);
+      btn.setAlpha(enabled ? this.buttonAlpha : this.buttonAlpha * 0.5);
+    });
   }
 
   /**

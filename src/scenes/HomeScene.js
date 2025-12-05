@@ -1,5 +1,8 @@
 import { Cursor } from "../entities/Cursor.js";
 import { DefaultMenu } from "../entities/DefaultMenu.js";
+import { Chalkboard } from "../entities/Chalkboard.js";
+import { QuizSystem } from "../systems/QuizSystem.js";
+import { PetReactionSystem } from "../systems/PetReactionSystem.js";
 import { goToScene } from "../utils/sceneHelpers.js";
 
 export class HomeScene extends Phaser.Scene {
@@ -36,7 +39,6 @@ export class HomeScene extends Phaser.Scene {
     this.load.audio("HomeBgMusic", "/assets/sounds/music/HomeBgMusic.mp3");
     this.load.audio("SlapSfx", "/assets/sounds/sfx/SlapSfx.ogg");
     this.load.audio("RubSfx", "/assets/sounds/sfx/RubSfx.wav");
-
 
     // pet sprite sheet: 128x16 with 8 frames of 16x16
     this.load.spritesheet("pet", "assets/sprites/petSheet.png", {
@@ -91,6 +93,13 @@ export class HomeScene extends Phaser.Scene {
           opts
         );
 
+        // Initialize pet reaction system
+        this.petReactionSystem = new PetReactionSystem(this, this.pet);
+        this.pet.reactionSystem = this.petReactionSystem;
+
+        // Setup idle reaction timer
+        this._scheduleNextIdleReaction();
+
         // Setup cursor-pet interaction
         // Use pointer coords so clicks only trigger when pointer is over the pet
         this.cursor.onCursorClick((cursor, pointer) => {
@@ -129,7 +138,7 @@ export class HomeScene extends Phaser.Scene {
         // Handle menu option clicks via shared helper
         switch (option) {
           case "Chat":
-            goToScene(this, "ChatScene", { fade: true, fadeDuration: 400 });
+            console.log("Sleep option selected");
             break;
           case "Explore":
             goToScene(this, "ExploreScene", { fade: true, fadeDuration: 400 });
@@ -156,9 +165,53 @@ export class HomeScene extends Phaser.Scene {
       },
     });
   }
+  _scheduleNextIdleReaction() {
+    // Schedule next idle reaction between 10-30 seconds
+    const delay = Phaser.Math.Between(10000, 30000);
+    
+    if (this._idleReactionTimer) {
+      this._idleReactionTimer.remove();
+    }
+    
+    this._idleReactionTimer = this.time.delayedCall(delay, () => {
+      this._triggerIdleReaction();
+    });
+  }
+
+  _triggerIdleReaction() {
+    // Only trigger if scene is in neutral state (no active systems)
+    if (this._isSceneNeutral() && this.petReactionSystem) {
+      this.petReactionSystem.quickReaction('idle');
+    }
+    
+    // Schedule next reaction
+    this._scheduleNextIdleReaction();
+  }
+
+  _isSceneNeutral() {
+    // HomeScene is always neutral (no quiz or clipboard active)
+    return true;
+  }
+
   update(time, delta) {
     if (this.pet && typeof this.pet.update === "function") {
       this.pet.update(time, delta);
+    }
+    if (this.petReactionSystem && typeof this.petReactionSystem.update === "function") {
+      this.petReactionSystem.update();
+    }
+  }
+  shutdown() {
+    // Clean up resources when scene is shut down
+    if (this.bgMusic) {
+      this.bgMusic.stop();
+    }
+    if (this._idleReactionTimer) {
+      this._idleReactionTimer.remove();
+      this._idleReactionTimer = null;
+    }
+    if (this.petReactionSystem) {
+      this.petReactionSystem.destroy();
     }
   }
 }

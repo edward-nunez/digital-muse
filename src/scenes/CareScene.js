@@ -99,6 +99,15 @@ export class CareScene extends Phaser.Scene {
           opts
         );
 
+        // Initialize pet reaction system
+        import("../systems/PetReactionSystem.js").then(({ PetReactionSystem }) => {
+          this.petReactionSystem = new PetReactionSystem(this, this.pet);
+          this.pet.reactionSystem = this.petReactionSystem;
+          
+          // Setup idle reaction timer
+          this._scheduleNextIdleReaction();
+        });
+
         // Setup cursor-pet interaction
         // Use pointer coords so clicks only trigger when pointer is over the pet
         this.cursor.onCursorClick((cursor, pointer) => {
@@ -140,10 +149,52 @@ export class CareScene extends Phaser.Scene {
     });
   }
 
+  _scheduleNextIdleReaction() {
+    // Schedule next idle reaction between 10-30 seconds
+    const delay = Phaser.Math.Between(10000, 30000);
+    
+    if (this._idleReactionTimer) {
+      this._idleReactionTimer.remove();
+    }
+    
+    this._idleReactionTimer = this.time.delayedCall(delay, () => {
+      this._triggerIdleReaction();
+    });
+  }
+
+  _triggerIdleReaction() {
+    // Only trigger if scene is in neutral state (clipboard not open)
+    if (this._isSceneNeutral() && this.petReactionSystem) {
+      this.petReactionSystem.quickReaction('idle');
+    }
+    
+    // Schedule next reaction
+    this._scheduleNextIdleReaction();
+  }
+
+  _isSceneNeutral() {
+    // Check if clipboard is not open
+    return !(this.statsClipboard && this.statsClipboard.isOpen);
+  }
+
   update(time, delta) {
     // Update logic for the scene
     if (this.pet && typeof this.pet.update === "function") {
       this.pet.update(time, delta);
+    }
+    if (this.petReactionSystem && typeof this.petReactionSystem.update === "function") {
+      this.petReactionSystem.update();
+    }
+  }
+
+  shutdown() {
+    // Clean up resources when scene is shut down
+    if (this._idleReactionTimer) {
+      this._idleReactionTimer.remove();
+      this._idleReactionTimer = null;
+    }
+    if (this.petReactionSystem) {
+      this.petReactionSystem.destroy();
     }
   }
 }

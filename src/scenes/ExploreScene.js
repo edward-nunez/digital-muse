@@ -1,5 +1,6 @@
 import { Cursor } from "../entities/Cursor.js";
 import { DefaultMenu } from "../entities/DefaultMenu.js";
+import { ExploreSystem } from "../systems/ExploreSystem.js";
 import { goToScene } from "../utils/sceneHelpers.js";
 
 export class ExploreScene extends Phaser.Scene {
@@ -86,6 +87,18 @@ export class ExploreScene extends Phaser.Scene {
           opts
         );
 
+        // Initialize pet reaction system
+        import("../systems/PetReactionSystem.js").then(({ PetReactionSystem }) => {
+          this.petReactionSystem = new PetReactionSystem(this, this.pet);
+          this.pet.reactionSystem = this.petReactionSystem;
+          
+          // Setup idle reaction timer (suppress during dialogue)
+          this._scheduleNextIdleReaction();
+        });
+
+        // Initialize explore system once pet exists
+        this.exploreSystem = new ExploreSystem(this, this.pet);
+
         // Setup cursor-pet interaction
         // Use pointer coords so clicks only trigger when pointer is over the pet
         this.cursor.onCursorClick((cursor, pointer) => {
@@ -121,18 +134,65 @@ export class ExploreScene extends Phaser.Scene {
           goToScene(this, "HomeScene", { fade: true, fadeDuration: 400 });
         }
         if (option === "Walk") {
-          console.log("Walk option clicked");
+          if (this.exploreSystem) {
+            this.exploreSystem.handleWalk();
+          }
         }
         if (option === "Search") {
-          console.log("Search option clicked");
+          if (this.exploreSystem) {
+            this.exploreSystem.handleSearch();
+          }
         }
       },
     });
   }
+
+  _scheduleNextIdleReaction() {
+    // Schedule next idle reaction between 10-30 seconds
+    const delay = Phaser.Math.Between(10000, 30000);
+    
+    if (this._idleReactionTimer) {
+      this._idleReactionTimer.remove();
+    }
+    
+    this._idleReactionTimer = this.time.delayedCall(delay, () => {
+      this._triggerIdleReaction();
+    });
+  }
+
+  _triggerIdleReaction() {
+    // Only trigger if scene is in neutral state (dialogue not active)
+    if (this._isSceneNeutral() && this.petReactionSystem) {
+      this.petReactionSystem.quickReaction('idle');
+    }
+    
+    // Schedule next reaction
+    this._scheduleNextIdleReaction();
+  }
+
+  _isSceneNeutral() {
+    // Check if dialogue is not active
+    return !(this.exploreSystem && this.exploreSystem.dialogueActive);
+  }
+
   update(time, delta) {
     // Update logic for the scene
     if (this.pet && typeof this.pet.update === "function") {
       this.pet.update(time, delta);
+    }
+    if (this.petReactionSystem && typeof this.petReactionSystem.update === "function") {
+      this.petReactionSystem.update();
+    }
+  }
+
+  shutdown() {
+    // Clean up resources when scene is shut down
+    if (this._idleReactionTimer) {
+      this._idleReactionTimer.remove();
+      this._idleReactionTimer = null;
+    }
+    if (this.petReactionSystem) {
+      this.petReactionSystem.destroy();
     }
   }
 }
