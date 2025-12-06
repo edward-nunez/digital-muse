@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # Redis database
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: digitalmuse-redis
     command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
     volumes:
@@ -18,9 +18,7 @@ services:
     restart: unless-stopped
 
   server:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: docker.io/dotrollen/digitalmuse:latest-server
     container_name: digitalmuse-server
     depends_on:
       redis:
@@ -37,9 +35,7 @@ services:
     restart: unless-stopped
 
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+    image: docker.io/dotrollen/digitalmuse:latest-client
     container_name: digitalmuse-client
     depends_on:
       server:
