@@ -1,5 +1,7 @@
 import { Cursor } from "../entities/Cursor.js";
 import { goToScene } from "../utils/sceneHelpers.js";
+import { socketService } from "../services/SocketService.js";
+import { apiClient } from "../services/APIClient.js";
 
 export class StartScene extends Phaser.Scene {
   constructor() {
@@ -12,6 +14,33 @@ export class StartScene extends Phaser.Scene {
   }
 
   create() {
+    // Initialize socket connection early
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
+    socketService.connect(socketUrl);
+    console.log("[StartScene] Socket connection initiated");
+
+    // Defer the rest so we can await session checks
+    this.handleEntry();
+  }
+
+  async handleEntry() {
+    const userJson = localStorage.getItem("user");
+    const petJson = localStorage.getItem("currentPet");
+
+    if (!userJson) {
+      goToScene(this, "Auth", { fade: true });
+      return;
+    }
+
+    const sessionOk = await this.ensureSession();
+    if (!sessionOk) return;
+
+    if (!petJson) {
+      goToScene(this, "PetCreation", { fade: true });
+      return;
+    }
+
+    // User and pet exist, proceed with game
     // Prepare background music but don't auto-play (may be suspended by browser)
     this.bgMusic = this.sound.add("MenuBgMusic", { loop: true, volume: 0.5 });
 
@@ -86,5 +115,19 @@ export class StartScene extends Phaser.Scene {
         console.warn('Failed to stop bgMusic on shutdown:', e);
       }
     });
+  }
+
+  async ensureSession() {
+    try {
+      const { user } = await apiClient.getMe();
+      localStorage.setItem("user", JSON.stringify(user));
+      return true;
+    } catch (err) {
+      console.error("[StartScene] Session check failed:", err);
+      localStorage.removeItem("user");
+      localStorage.removeItem("currentPet");
+      goToScene(this, "Auth", { fade: true });
+      return false;
+    }
   }
 }

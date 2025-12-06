@@ -1,22 +1,21 @@
 version: "3.8"
 services:
-  emulator:
-    image: node:20-bullseye-slim
-    command: bash -c "npm install -g firebase-tools && firebase emulators:start --only auth,firestore,database"
-    ports:
-      - 4000:4000 # UI
-      - 9099:9099 # Auth
-      - 8080:8080 # Firestore
-      - 9000:9000 # Realtime DB
-    volumes:
-      - emulator-data:/root/.cache/firebase/emulators
   app:
+    depends_on:
+      - redis
     build: .
     ports:
       - 5173:5173 # Vite dev server
-    depends_on:
-      - emulator
-    environment:
-      - FIREBASE_EMULATOR=true
+  redis:
+    image: redis:latest
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    volumes:
+      - redis-data:/data
+    ports:
+      - 6379:6379
 volumes:
-  emulator-data:
+  redis-data:
+    driver: local
+    name: digitalmuse-redis-data
+    external: true
+

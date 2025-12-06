@@ -127,12 +127,10 @@ export class HomeScene extends Phaser.Scene {
         { label: "Chat", x: 60, y: 30 },
         { label: "Explore", x: cam.width - 60, y: 30 },
 
-        { label: "Play", x: cam.centerX - 300, y: cam.height - 30 },
-        { label: "Sleep", x: cam.centerX - 180, y: cam.height - 30 },
-        { label: "Clean", x: cam.centerX - 60, y: cam.height - 30 },
-        { label: "Toilet", x: cam.centerX + 60, y: cam.height - 30 },
-        { label: "Train", x: cam.centerX + 180, y: cam.height - 30 },
-        { label: "Care", x: cam.centerX + 300, y: cam.height - 30 },
+        { label: "Play",  x: cam.centerX - 180, y: cam.height - 30 },
+        { label: "Battle", x: cam.centerX - 60, y: cam.height - 30 },
+        { label: "Train", x: cam.centerX + 60, y: cam.height - 30 },
+        { label: "Care", x: cam.centerX + 180, y: cam.height - 30 },
       ],
       onOptionClick: (option) => {
         // Handle menu option clicks via shared helper
@@ -151,15 +149,6 @@ export class HomeScene extends Phaser.Scene {
             break;
           case "Play":
             goToScene(this, "PlayScene", { fade: true, fadeDuration: 400 });
-            break;
-          case "Sleep":
-            console.log("Sleep option selected");
-            break;
-          case "Clean":
-            console.log("Clean option selected");
-            break;
-          case "Toilet":
-            console.log("Toilet option selected");
             break;
         }
       },

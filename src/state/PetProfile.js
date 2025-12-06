@@ -5,6 +5,8 @@ export class PetProfile {
     className = "Paladin",
     personality = "Friendly",
     alignment = 0,
+    level = 1,
+    experience = 0,
     stats = {},
   } = {}) {
     this.id = id ?? `pet_${Date.now()}`;
@@ -13,6 +15,8 @@ export class PetProfile {
     this.personality = personality;
     this.alignment = alignment; // neutral by default, can be -100 (evil) to +100 (good)
     this.neglectCount = 0; // 25 neglects lead to game over
+    this.level = level;
+    this.experience = experience;
     // structured default stats
     const defaultStats = {
       attributes: {
@@ -57,6 +61,8 @@ export class PetProfile {
       personality: this.personality,
       alignment: this.alignment,
       neglectCount: this.neglectCount,
+      level: this.level,
+      experience: this.experience,
       stats: this.stats,
     };
   }
@@ -70,6 +76,8 @@ export class PetProfile {
       personality: obj.personality,
       alignment: obj.alignment,
       neglectCount: obj.neglectCount,
+      level: obj.level,
+      experience: obj.experience,
       stats: obj.stats,
     });
   }

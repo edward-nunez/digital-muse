@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "express": "^5.2.1",
-    "phaser": "^4.0.0-rc.5"
+    "phaser": "^4.0.0-rc.5",
+    "socket.io-client": "^4.8.1"
   }
 }

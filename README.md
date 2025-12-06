@@ -47,3 +47,21 @@ BMFont https://www.angelcode.com/products/bmfont/
 
 Quiz Content: 
 ChatGPT
+
+
+# Docker container
+Local Redis: `docker run --name digitalmuse-redis -d -p 6379:6379 redis --save 60 1 --loglevel warning`
+
+User opens game
+  ↓
+StartScene checks localStorage
+  ↓
+No user? → AuthScene (login/register) → User created on server
+  ↓
+No pet? → PetCreationScene → Pet created on server
+  ↓
+HomeScene → Game starts with loaded pet data
+  ↓
+During gameplay → PetStore.saveToServer() periodically
+  ↓
+After battles → updateUserStats() increases rank/battlePoints
