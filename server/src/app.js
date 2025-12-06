@@ -6,19 +6,12 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import session from "express-session";
 import {RedisStore} from "connect-redis";
-import path from "path";
-import { fileURLToPath } from "url";
-
 import apiRouter from "./routes/index.js";
 import errorHandler from "./middleware/errorHandler.js";
 import { redis, ensureRedis } from "./lib/redis.js";
 import csrfProtection from "./middleware/csrf.js";
 
 const app = express();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const distPath = path.resolve(__dirname, "..", "..", "dist");
 
 // Ensure Redis is connected (node-redis client for connect-redis v9)
 ensureRedis().catch((err) => {
@@ -100,18 +93,7 @@ app.use((req, res, next) => {
   csrfProtection(req, res, next);
 });
 
-// Static serving of built client
-app.use(express.static(distPath));
-
-// SPA fallback (only if not an API route)
-app.use((req, res, next) => {
-  if (req.path.startsWith("/api")) {
-    return res.status(404).json({ error: "Not found" });
-  }
-  res.sendFile(path.join(distPath, "index.html"));
-});
-
-// Error handler
+// Error handler (client is served from static host, not from this Express server)
 app.use(errorHandler);
 
 export default app;

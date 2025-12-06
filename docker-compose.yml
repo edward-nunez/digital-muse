@@ -1,21 +1,55 @@
 version: "3.8"
+
 services:
-  app:
-    depends_on:
-      - redis
-    build: .
-    ports:
-      - 5173:5173 # Vite dev server
+  # Redis database
   redis:
-    image: redis:latest
+    image: redis:7-alpine
+    container_name: digitalmuse-redis
     command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
     volumes:
       - redis-data:/data
     ports:
-      - 6379:6379
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: digitalmuse-server
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      # Runtime environment variables
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${PORT:-3000}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - SESSION_SECRET=${SESSION_SECRET:?SESSION_SECRET is required}
+      - CORS_ORIGIN=${CORS_ORIGIN:?CORS_ORIGIN is required}
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: digitalmuse-client
+    depends_on:
+      server:
+        condition: service_started
+    ports:
+      - "8080:80"
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:3000}
+    restart: unless-stopped
 volumes:
   redis-data:
     driver: local
     name: digitalmuse-redis-data
-    external: true
-

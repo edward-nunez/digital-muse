@@ -1,0 +1,64 @@
+# Dockerignore for client build
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build output
+dist/
+.cache/
+
+# Environment files (should be passed as build args)
+.env
+.env.*
+!.env.example
+
+# Server files (not needed for client build)
+server/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+!README.md
+CHANGES.md
+ARCHITECTURE.md
+DEPLOYMENT.md
+
+# Docker files
+Dockerfile
+Dockerfile.*
+docker-compose*.yml
+.dockerignore
+
+# Helm charts
+helm/
+
+# Scripts
+scripts/
+
+# Test files
+**/*.test.js
+**/*.spec.js
+coverage/
+
+# Misc
+.prettierrc
+.eslintrc*
+.editorconfig

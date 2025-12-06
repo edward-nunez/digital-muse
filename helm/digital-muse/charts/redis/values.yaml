@@ -1,0 +1,67 @@
+# NOTE: This subchart is for configuration reference only when using Digital Ocean's managed Valkey service.
+# The local Redis deployment has been disabled in favor of the managed Valkey service.
+# Set replicaCount: 0 to disable the local deployment.
+
+replicaCount: 0  # Set to 0 when using managed Digital Ocean Valkey
+
+image:
+  repository: valkey
+  pullPolicy: IfNotPresent
+  tag: "7-alpine"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 6379
+  targetPort: 6379
+  annotations: {}
+
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClassName: "standard"
+  accessMode: ReadWriteOnce
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+livenessProbe:
+  exec:
+    command:
+      - redis-cli
+      - ping
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+readinessProbe:
+  exec:
+    command:
+      - redis-cli
+      - ping
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 2
+  failureThreshold: 2
+
+# Redis configuration
+config:
+  save: "60 1"
+  loglevel: "warning"
+  maxmemory: "512mb"
+  maxmemoryPolicy: "allkeys-lru"

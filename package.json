@@ -15,8 +15,9 @@
   "author": "edwardnnz@gmail.com",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode local",
     "build": "vite build",
+    "build:check-env": "node scripts/check-build-env.js && vite build",
     "preview": "vite preview",
     "test": "vitest"
   },

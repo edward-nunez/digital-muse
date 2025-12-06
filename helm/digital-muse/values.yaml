@@ -1,0 +1,135 @@
+# Default values for digital-muse
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global settings
+global:
+  environment: production
+  domain: "your-domain.com"
+  apiUrl: "https://api.your-domain.com"
+
+# Client subchart
+client:
+  enabled: true
+  image:
+    repository: docker.io/dotrollen/digitalmuse
+    tag: "v1.0.0-client"
+    pullPolicy: IfNotPresent
+  
+  replicaCount: 2
+  
+  service:
+    type: LoadBalancer
+    port: 80
+    targetPort: 80
+  
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    hosts:
+      - host: "your-domain.com"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: "your-domain-tls"
+        hosts:
+          - "your-domain.com"
+  
+  resources:
+    limits:
+      cpu: 200m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+
+# Server subchart
+server:
+  enabled: true
+  image:
+    repository: docker.io/dotrollen/digitalmuse
+    tag: "v1.0.0-server"
+    pullPolicy: IfNotPresent
+  
+  replicaCount: 2
+  
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    hosts:
+      - host: "api.your-domain.com"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: "api-your-domain-tls"
+        hosts:
+          - "api.your-domain.com"
+  
+  env:
+    NODE_ENV: "production"
+    PORT: "3000"
+    CORS_ORIGIN: "https://your-domain.com"
+  
+  # Secrets (create these in your cluster)
+  secrets:
+    redisUrl: "digitalmuse-redis-url"  # Secret key: redis-url
+    sessionSecret: "digitalmuse-session-secret"  # Secret key: session-secret
+  
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+
+# Valkey configuration (using Digital Ocean's managed Valkey service)
+# When enabled: false, you MUST set the REDIS_URL secret to point to your managed Valkey endpoint
+redis:
+  enabled: false  # Disable local Redis when using managed Valkey
+  image:
+    repository: valkey
+    tag: "7-alpine"
+    pullPolicy: IfNotPresent
+  
+  persistence:
+    enabled: false
+    size: 5Gi
+    storageClassName: "standard"
+  
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+# Monitoring
+monitoring:
+  enabled: false
+  prometheus:
+    enabled: false

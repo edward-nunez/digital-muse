@@ -1,0 +1,27 @@
+# Dockerfile for Digital Muse API Server
+# 
+# Note: Client (dist/) is built and deployed separately to static hosting
+# This container only runs the Node.js API server
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY server/package*.json ./
+
+# Install dependencies (production only)
+RUN npm ci --omit=dev
+
+# Copy server code
+COPY server/ ./
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+
+# Start server (uses environment variables for config)
+CMD ["npm", "run", "start"]

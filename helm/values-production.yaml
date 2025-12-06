@@ -1,0 +1,152 @@
+# Production values for Digital Muse Helm chart
+# Usage: helm install digital-muse ./digital-muse -f helm/values-production.yaml
+
+global:
+  environment: production
+  domain: "your-domain.com"
+  apiUrl: "https://api.your-domain.com"
+
+client:
+  enabled: true
+  replicaCount: 3
+  
+  image:
+    repository: docker.io/dotrollen/digitalmuse
+    tag: "v1.0.0-client"
+    pullPolicy: IfNotPresent
+  
+  service:
+    type: ClusterIP
+    port: 80
+  
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    hosts:
+      - host: "your-domain.com"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: "your-domain-tls"
+        hosts:
+          - "your-domain.com"
+  
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 250m
+      memory: 128Mi
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 75
+    targetMemoryUtilizationPercentage: 80
+  
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+server:
+  enabled: true
+  replicaCount: 3
+  
+  image:
+    repository: docker.io/dotrollen/digitalmuse
+    tag: "v1.0.0-server"
+    pullPolicy: IfNotPresent
+  
+  service:
+    type: ClusterIP
+    port: 3000
+  
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/websocket-services: "digital-muse-server"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    hosts:
+      - host: "api.your-domain.com"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: "api-your-domain-tls"
+        hosts:
+          - "api.your-domain.com"
+  
+  env:
+    NODE_ENV: "production"
+    PORT: "3000"
+    CORS_ORIGIN: "https://your-domain.com"
+  
+  secrets:
+    redisUrl: "digitalmuse-redis-url"
+    sessionSecret: "digitalmuse-session-secret"
+  
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 75
+  
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+# Using Digital Ocean's managed Valkey service (production)
+redis:
+  enabled: false  # Disable local Redis, using managed Valkey
+  replicaCount: 0
+  
+  image:
+    repository: valkey
+    tag: "7-alpine"
+  
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClassName: "standard"
+  
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  
+  config:
+    save: "60 1000"
+    loglevel: "notice"
+    maxmemory: "1gb"
+    maxmemoryPolicy: "allkeys-lru"
+
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true

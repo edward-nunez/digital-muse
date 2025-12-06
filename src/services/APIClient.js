@@ -1,7 +1,7 @@
 // API client for REST endpoints
 class APIClient {
   constructor() {
-    this.baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    this.baseURL = import.meta.env.DIGITALMUSE_API_URL || "http://localhost:3000";
     this.csrfToken = null;
   }
 

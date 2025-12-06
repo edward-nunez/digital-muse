@@ -1,0 +1,35 @@
+apiVersion: v2
+name: digital-muse
+description: A Helm chart for Digital Muse - Monster tamer game with AI and multiplayer
+type: application
+version: 1.0.0
+appVersion: "0.1.0"
+
+keywords:
+  - game
+  - phaser
+  - ai
+  - multiplayer
+  - socket.io
+
+maintainers:
+  - name: Digital Muse Contributors
+    email: support@digital-muse.dev
+
+home: https://github.com/edward-nunez/digital-muse
+sources:
+  - https://github.com/edward-nunez/digital-muse
+
+dependencies:
+  - name: client
+    version: "1.0.0"
+    repository: "file://../client"
+    condition: client.enabled
+  - name: server
+    version: "1.0.0"
+    repository: "file://../server"
+    condition: server.enabled
+  - name: redis
+    version: "1.0.0"
+    repository: "file://../redis"
+    condition: redis.enabled

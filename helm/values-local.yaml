@@ -1,0 +1,113 @@
+# Local development values for Digital Muse Helm chart (for Minikube, Docker Desktop K8s, etc.)
+# Usage: helm install digital-muse ./digital-muse -f helm/values-local.yaml
+
+global:
+  environment: local
+  domain: "localhost"
+  apiUrl: "http://localhost:3000"
+
+client:
+  enabled: true
+  replicaCount: 1
+  
+  image:
+    repository: docker.io/dotrollen/digitalmuse
+    tag: "v1.0.0-client"
+    pullPolicy: IfNotPresent
+  
+  service:
+    type: NodePort
+    port: 80
+    targetPort: 80
+  
+  ingress:
+    enabled: false
+  
+  resources:
+    limits:
+      cpu: 200m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 32Mi
+  
+  autoscaling:
+    enabled: false
+  
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+server:
+  enabled: true
+  replicaCount: 1
+  
+  image:
+    repository: docker.io/dotrollen/digitalmuse
+    tag: "v1.0.0-server"
+    pullPolicy: IfNotPresent
+  
+  service:
+    type: NodePort
+    port: 3000
+    targetPort: 3000
+  
+  ingress:
+    enabled: false
+  
+  env:
+    NODE_ENV: "development"
+    PORT: "3000"
+    CORS_ORIGIN: "http://localhost"
+  
+  secrets:
+    redisUrl: "digitalmuse-redis-url"
+    sessionSecret: "digitalmuse-session-secret"
+  
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  
+  autoscaling:
+    enabled: false
+  
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+# For local development, you can either:
+# 1. Use a local Redis via 'docker run redis:7-alpine' (set enabled: true)
+# 2. Use managed Digital Ocean Valkey (set enabled: false and set REDIS_URL secret)
+redis:
+  enabled: false  # Set to true for local Redis, false for managed Valkey
+  replicaCount: 0
+  
+  image:
+    repository: valkey
+    tag: "7-alpine"
+  
+  persistence:
+    enabled: false
+  
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  
+  config:
+    save: "60 1"
+    loglevel: "notice"
+    maxmemory: "256mb"
+    maxmemoryPolicy: "allkeys-lru"
+
+monitoring:
+  enabled: false

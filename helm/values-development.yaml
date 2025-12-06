@@ -1,0 +1,139 @@
+# Development values for Digital Muse Helm chart
+# Usage: helm install digital-muse ./digital-muse -f helm/values-development.yaml
+
+global:
+  environment: development
+  domain: "digitalmuse.edwardnunez.io"
+  apiUrl: "https://api-digitalmuse.edwardnunez.io"
+
+client:
+  enabled: true
+  replicaCount: 1
+  
+  image:
+    repository: docker.io/dotrollen/digitalmuse
+    tag: "v1.0.0-client"
+    pullPolicy: IfNotPresent
+  
+  service:
+    type: ClusterIP
+    port: 80
+  
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    hosts:
+      - host: "digitalmuse.edwardnunez.io"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: "dev-edwardnunez-tls"
+        hosts:
+          - "digitalmuse.edwardnunez.io"
+  
+  resources:
+    limits:
+      cpu: 200m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+  
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+server:
+  enabled: true
+  replicaCount: 1
+  
+  image:
+    repository: docker.io/dotrollen/digitalmuse
+    tag: "v1.0.0-server"
+    pullPolicy: Always
+  
+  service:
+    type: ClusterIP
+    port: 3000
+  
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    hosts:
+      - host: "api-digitalmuse.edwardnunez.io"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: "api-dev-edwardnunez-tls"
+        hosts:
+          - "api-digitalmuse.edwardnunez.io"
+  
+  env:
+    NODE_ENV: "development"
+    PORT: "3000"
+    CORS_ORIGIN: "https://digitalmuse.edwardnunez.io"
+  
+  secrets:
+    redisUrl: "digitalmuse-redis-url"
+    sessionSecret: "digitalmuse-session-secret"
+  
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+  
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+# Using Digital Ocean's managed Valkey service (development)
+redis:
+  enabled: false  # Disable local Redis, using managed Valkey
+  replicaCount: 0
+  
+  image:
+    repository: valkey
+    tag: "7-alpine"
+  
+  persistence:
+    enabled: true
+    size: 2Gi
+    storageClassName: "standard"
+  
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  
+  config:
+    save: "60 1"
+    loglevel: "notice"
+    maxmemory: "512mb"
+    maxmemoryPolicy: "allkeys-lru"
+
+monitoring:
+  enabled: false
