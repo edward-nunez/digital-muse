@@ -74,23 +74,43 @@ for values_file in values-production.yaml values-development.yaml values-local.y
 done
 echo ""
 
-# 6. Check for required values
+# 6. Check for required configuration values
 echo -e "${YELLOW}6. Checking for required configuration values...${NC}"
-REQUIRED_KEYS=(
-    "client.image.repository"
-    "client.image.tag"
-    "server.image.repository"
-    "server.image.tag"
-    "redis.image.repository"
-)
 
-for key in "${REQUIRED_KEYS[@]}"; do
-    if helm template digital-muse $CHART_DIR | grep -q "${key##*.}"; then
-        echo -e "  ${GREEN}✓${NC} $key"
+# Check if images are properly configured in rendered manifests
+RENDERED_OUTPUT=$(helm template digital-muse $CHART_DIR 2>/dev/null)
+
+# Check for specific image references
+if echo "$RENDERED_OUTPUT" | grep -q "docker.io/dotrollen/digitalmuse.*client"; then
+    echo -e "  ${GREEN}✓${NC} client.image configured (docker.io/dotrollen/digitalmuse)"
+else
+    echo -e "  ${RED}✗${NC} client.image not found in rendered manifests"
+fi
+
+if echo "$RENDERED_OUTPUT" | grep -q "docker.io/dotrollen/digitalmuse.*server"; then
+    echo -e "  ${GREEN}✓${NC} server.image configured (docker.io/dotrollen/digitalmuse)"
+else
+    echo -e "  ${RED}✗${NC} server.image not found in rendered manifests"
+fi
+
+# Check if redis is enabled/configured
+if grep -q "enabled: true" $CHART_DIR/values.yaml | grep -B1 "redis" &>/dev/null; then
+    if echo "$RENDERED_OUTPUT" | grep -q "image:.*valkey"; then
+        echo -e "  ${GREEN}✓${NC} redis.image configured (valkey)"
     else
-        echo -e "  ${RED}✗${NC} $key not found"
+        echo -e "  ${YELLOW}⚠${NC} redis.image not found (redis may be disabled)"
     fi
-done
+else
+    echo -e "  ${YELLOW}⚠${NC} redis disabled in values (using managed service)"
+fi
+
+# Verify imagePullSecrets are configured
+if echo "$RENDERED_OUTPUT" | grep -q "dockerhub-secret"; then
+    echo -e "  ${GREEN}✓${NC} imagePullSecrets configured (dockerhub-secret)"
+else
+    echo -e "  ${YELLOW}⚠${NC} imagePullSecrets not found"
+fi
+
 echo ""
 
 # 7. Chart dependencies
