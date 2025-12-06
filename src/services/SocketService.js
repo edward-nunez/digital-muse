@@ -10,7 +10,10 @@ class SocketService {
     this.listeners = new Map(); // Track listeners for cleanup
   }
 
-  connect(url = "http://localhost:3000", options = {}) {
+  connect(url = (typeof __API_URL__ !== 'undefined' ? __API_URL__ : null)
+    || import.meta.env.VITE_DIGITALMUSE_API_URL
+    || import.meta.env.DIGITALMUSE_API_URL
+    || "http://localhost:3000", options = {}) {
     if (this.socket) {
       console.log("[SocketService] Already connected");
       return this.socket;

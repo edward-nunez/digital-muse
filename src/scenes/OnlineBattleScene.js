@@ -62,8 +62,7 @@ export class OnlineBattleScene extends Phaser.Scene {
 
   _initializeMultiplayer() {
     if (!socketService.isConnected()) {
-      const socketUrl = import.meta.env.DIGITALMUSE_API_URL || "http://localhost:3000";
-      socketService.connect(socketUrl);
+      socketService.connect();
     }
 
     // Join battle lobby

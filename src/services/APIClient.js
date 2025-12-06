@@ -1,8 +1,11 @@
 // API client for REST endpoints
 class APIClient {
   constructor() {
-    this.baseURL = import.meta.env.DIGITALMUSE_API_URL || "http://localhost:3000";
+    const envApiUrl = import.meta.env.VITE_DIGITALMUSE_API_URL || import.meta.env.DIGITALMUSE_API_URL;
+    const definedApi = (typeof __API_URL__ !== "undefined" ? __API_URL__ : null);
+    this.baseURL = definedApi || envApiUrl || "http://localhost:3000";
     this.csrfToken = null;
+    console.log("[APIClient] Using API URL:", this.baseURL);
   }
 
   async request(endpoint, options = {}) {

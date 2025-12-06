@@ -21,8 +21,9 @@ ARG DIGITALMUSE_API_URL
 # Validate required build arguments
 RUN if [ -z "$DIGITALMUSE_API_URL" ]; then echo "Error: DIGITALMUSE_API_URL is required" && exit 1; fi
 
-# Set environment variables for Vite build
+# Set environment variables for Vite build (Vite exposes only VITE_* to client bundle)
 ENV DIGITALMUSE_API_URL=$DIGITALMUSE_API_URL
+ENV VITE_DIGITALMUSE_API_URL=$DIGITALMUSE_API_URL
 
 # Build the client (validates env vars and creates dist/)
 RUN npm run build:check-env

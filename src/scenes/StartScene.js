@@ -14,9 +14,8 @@ export class StartScene extends Phaser.Scene {
   }
 
   create() {
-    // Initialize socket connection early
-    const socketUrl = import.meta.env.DIGITALMUSE_API_URL || "http://localhost:3000";
-    socketService.connect(socketUrl);
+    // Initialize socket connection early (use configured API URL)
+    socketService.connect();
     console.log("[StartScene] Socket connection initiated");
 
     // Defer the rest so we can await session checks
