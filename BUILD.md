@@ -69,7 +69,7 @@ export VERSION=v1.0.0
 ```
 
 This creates:
-- `ghcr.io/myorg/digitalmuse:v1.0.0-client`
+- `ghcr.io/myorg/digitalmuse:v1.0.2-client`
 - `ghcr.io/myorg/digitalmuse:v1.0.0-server`
 
 ## Testing Built Images

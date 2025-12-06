@@ -78,7 +78,7 @@ global:
 
 client:
   image:
-    tag: "v1.0.0-client"
+    tag: "v1.0.2-client"
   ingress:
     hosts:
       - host: "your-domain.com"
