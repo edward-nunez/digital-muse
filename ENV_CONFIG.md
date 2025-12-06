@@ -4,21 +4,21 @@ This project uses environment variables for configuration. Only local developmen
 
 ## Environments
 
-- **Local Dev**: Development on localhost (uses `.env.local`)
+- **Local Dev**: Development on localhost (uses `.env`)
 - **Development**: Hosted development environment (uses system env vars)
 - **Production**: Live production environment (uses system env vars)
 
 ## Client (Vite)
 
 ### Local Development
-Uses `.env.local` file in root directory.
+Uses `.env` file in root directory.
 
 **Variables:**
 - `DIGITALMUSE_API_URL` - API server URL (e.g., http://localhost:3000)
 
 **Command:**
 ```bash
-npm run dev              # Uses .env.local
+npm run dev              # Uses .env
 ```
 
 ### Production/Development Builds
@@ -38,7 +38,7 @@ npm run build:check-env  # Validates env vars before building
 ## Server (Node.js)
 
 ### Local Development
-Uses `server/.env.local` file loaded by dotenv.
+Uses `server/.env` file loaded by dotenv.
 
 **Variables:**
 - `NODE_ENV` - Set to 'development'
@@ -50,7 +50,7 @@ Uses `server/.env.local` file loaded by dotenv.
 **Command:**
 ```bash
 cd server
-npm run dev              # Uses .env.local
+npm run dev              # Uses .env
 ```
 
 ### Production/Development Deployment
@@ -129,7 +129,7 @@ stringData:
 ## Security Notes
 
 ✅ **Best Practices:**
-- Only `.env.local` files for local development
+- Only `.env` files for local development
 - System environment variables for production/development
 - Never commit secrets to git
 - Rotate SESSION_SECRET periodically

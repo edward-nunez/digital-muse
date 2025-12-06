@@ -131,7 +131,7 @@ Both client and server run on localhost:
 - Client: Vite dev server on `http://localhost:5173`
 - Server: Express on `http://localhost:3000`
 - Redis: Docker container on `localhost:6379`
-- Environment: `.env.local` files for both
+- Environment: `.env` files for both
 
 ### Staging/Production
 
@@ -188,7 +188,7 @@ npm run dev
 # Terminal 2: Server
 cd server && npm run dev
 # Server hot-reloads on changes
-# Uses .env.local for Redis connection
+# Uses .env for Redis connection
 ```
 
 ### Production

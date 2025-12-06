@@ -25,16 +25,16 @@ This separation allows:
 ### 1. Configure Environment Variables
 
 #### Local Development Only
-For local development, use `.env.local` files:
+For local development, use `.env` files:
 
 ```bash
 # Client
-cp .env.example .env.local
+cp .env.example .env
 # Edit DIGITALMUSE_API_URL and DIGITALMUSE_API_URL to localhost
 
 # Server
 cd server
-cp .env.example .env.local
+cp .env.example .env
 # Configure for local Redis and localhost CORS
 ```
 
@@ -483,7 +483,7 @@ redis-cli -u $REDIS_URL ping
 - [ ] Enabled HTTPS/SSL for both client and server
 - [ ] Configured `CORS_ORIGIN` to specific domain (never use wildcards)
 - [ ] Verified secure cookies enabled in production (secure flag set)
-- [ ] Confirmed .env files in .gitignore (only .env.local for local dev)
+- [ ] Confirmed .env files in .gitignore (only .env for local dev)
 - [ ] Rate limiting configured on `/api/auth` endpoints
 - [ ] Redis password authentication enabled
 - [ ] Regular security updates (npm audit, dependabot)

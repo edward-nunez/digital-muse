@@ -190,7 +190,7 @@ npm run start             # Runs server API only (no client)
 ```bash
 npm run dev              # Client on :5173
 cd server && npm run dev # Server on :3000
-# Both use .env.local files
+# Both use .env files
 ```
 
 ### Production Build

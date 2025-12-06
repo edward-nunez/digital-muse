@@ -60,10 +60,10 @@
     │ :5173                      │      │ (Express + hot-reload)   │
     │ ├─ Hot module reload       │      │ :3000                    │
     │ ├─ Source maps             │      │ ├─ Environment from      │
-    │ └─ Instant compilation     │      │ │  .env.local            │
+    │ └─ Instant compilation     │      │ │  .env            │
     │                            │      │ └─ Redis connection      │
-    │ File: .env.local           │      │                          │
-    │ DIGITALMUSE_API_URL=              │      │ File: server/.env.local  │
+    │ File: .env           │      │                          │
+    │ DIGITALMUSE_API_URL=              │      │ File: server/.env  │
     │   http://localhost:3000    │      │ REDIS_URL=...            │
     │                            │      │ SESSION_SECRET=...       │
     │                            │      │ CORS_ORIGIN=             │

@@ -84,7 +84,7 @@ The client automatically connects to `http://localhost:3000` for API calls.
 - `npm run preview` - Preview production build locally
 
 **Server**:
-- `npm run dev` - Start with hot-reload (uses .env.local)
+- `npm run dev` - Start with hot-reload (uses .env)
 - `npm run start` - Start for production (uses system env vars)
 
 ## Building for Production
@@ -156,7 +156,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for details.
 
 ## Configuration
 
-### Local Development (.env.local)
+### Local Development (.env)
 
 Client:
 ```bash

@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development node -r dotenv/config src/index.js dotenv_config_path=.env.local",
+    "dev": "NODE_ENV=development node -r dotenv/config src/index.js dotenv_config_path=.env",
     "start": "node src/index.js"
   },
   "dependencies": {
