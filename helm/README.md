@@ -77,7 +77,7 @@ helm/
 ## Components
 
 ### Client (`charts/client`)
-- **Image**: `docker.io/dotrollen/digitalmuse:v1.0.2-client`
+- **Image**: `docker.io/dotrollen/digitalmuse:v1.0.3-client`
 - **Purpose**: Serves static Phaser game UI via Nginx
 - **Scaling**: 2-5 replicas (default: 2)
 - **Service**: LoadBalancer (default), can be NodePort
@@ -156,7 +156,7 @@ kubectl scale deployment/digital-muse-server --replicas=5 -n digital-muse
 ```bash
 helm upgrade digital-muse ./digital-muse \
   -n digital-muse \
-  --set client.image.tag=v1.0.2-client \
+  --set client.image.tag=v1.0.3-client \
   --set server.image.tag=v1.0.1-server
   -f values-development.yaml
 ```

@@ -6,6 +6,9 @@ export default defineConfig(({ mode }) => {
     // Load env file based on mode (local, development, production)
     const env = loadEnv(mode, process.cwd(), '');
     
+    // Get DIGITALMUSE_API_URL from environment
+    const apiUrl = process.env.DIGITALMUSE_API_URL || 'http://localhost:3000';
+    
     return {
         root: "src",
         publicDir: "../public",
@@ -26,6 +29,7 @@ export default defineConfig(({ mode }) => {
         define: {
             // Expose env vars to client
             __APP_ENV__: JSON.stringify(mode),
+            __API_URL__: JSON.stringify(apiUrl),
         },
     };
 });

@@ -12,7 +12,7 @@ client:
   
   image:
     repository: docker.io/dotrollen/digitalmuse
-    tag: "v1.0.2-client"
+    tag: "v1.0.3-client"
     pullPolicy: IfNotPresent
   
   imagePullSecrets:

@@ -138,7 +138,7 @@ The Helm charts have been updated with the following configuration:
 client:
   image:
     repository: docker.io/dotrollen/digitalmuse
-    tag: "v1.0.2-client"
+    tag: "v1.0.3-client"
   imagePullSecrets:
     - name: dockerhub-secret
 

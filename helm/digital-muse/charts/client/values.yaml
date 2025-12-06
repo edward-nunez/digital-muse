@@ -3,7 +3,7 @@ replicaCount: 2
 image:
   repository: docker.io/dotrollen/digitalmuse
   pullPolicy: IfNotPresent
-  tag: "v1.0.2-client"
+  tag: "v1.0.3-client"
 
 imagePullSecrets:
   - name: dockerhub-secret

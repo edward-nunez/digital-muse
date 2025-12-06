@@ -14,7 +14,7 @@ client:
   enabled: true
   image:
     repository: docker.io/dotrollen/digitalmuse
-    tag: "v1.0.2-client"  # Override: set global.appVersion (e.g., "v1.2.0") to use "v1.2.0-client"
+    tag: "v1.0.3-client"  # Override: set global.appVersion (e.g., "v1.2.0") to use "v1.2.0-client"
     pullPolicy: IfNotPresent
   
   imagePullSecrets:
