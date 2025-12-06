@@ -5,7 +5,8 @@ image:
   pullPolicy: IfNotPresent
   tag: "v1.0.0-client"
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: dockerhub-secret
 nameOverride: ""
 fullnameOverride: ""
 
@@ -17,7 +18,7 @@ serviceAccount:
 service:
   type: LoadBalancer
   port: 80
-  targetPort: 80
+  targetPort: 8080
   annotations: {}
 
 ingress:
@@ -60,7 +61,7 @@ affinity: {}
 livenessProbe:
   httpGet:
     path: /health
-    port: 80
+    port: 8080
   initialDelaySeconds: 10
   periodSeconds: 10
   timeoutSeconds: 3
@@ -69,7 +70,7 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: /health
-    port: 80
+    port: 8080
   initialDelaySeconds: 5
   periodSeconds: 5
   timeoutSeconds: 2

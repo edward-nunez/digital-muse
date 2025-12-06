@@ -15,9 +15,13 @@ client:
     tag: "v1.0.0-client"
     pullPolicy: IfNotPresent
   
+  imagePullSecrets:
+    - name: dockerhub-secret
+  
   service:
     type: ClusterIP
     port: 80
+    targetPort: 8080
   
   ingress:
     enabled: true
@@ -64,6 +68,9 @@ server:
     repository: docker.io/dotrollen/digitalmuse
     tag: "v1.0.0-server"
     pullPolicy: IfNotPresent
+  
+  imagePullSecrets:
+    - name: dockerhub-secret
   
   service:
     type: ClusterIP

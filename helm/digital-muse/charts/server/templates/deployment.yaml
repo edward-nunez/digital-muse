@@ -33,7 +33,7 @@ spec:
           capabilities:
             drop:
             - ALL
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        image: "{{ .Values.image.repository }}:{{ if .Values.global.appVersion }}{{ .Values.global.appVersion }}-server{{ else }}{{ .Values.image.tag }}{{ end }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - name: http

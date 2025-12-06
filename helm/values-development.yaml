@@ -12,18 +12,22 @@ client:
   
   image:
     repository: docker.io/dotrollen/digitalmuse
-    tag: "v1.0.0-client"
+    tag: "v1.0.1-client"
     pullPolicy: IfNotPresent
+  
+  imagePullSecrets:
+    - name: dockerhub-secret
   
   service:
     type: ClusterIP
     port: 80
+    targetPort: 8080
   
   ingress:
     enabled: true
     className: "nginx"
     annotations:
-      cert-manager.io/cluster-issuer: "letsencrypt-staging"
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
     hosts:
       - host: "digitalmuse.edwardnunez.io"
         paths:
@@ -61,6 +65,9 @@ server:
     tag: "v1.0.0-server"
     pullPolicy: Always
   
+  imagePullSecrets:
+    - name: dockerhub-secret
+  
   service:
     type: ClusterIP
     port: 3000
@@ -69,7 +76,7 @@ server:
     enabled: true
     className: "nginx"
     annotations:
-      cert-manager.io/cluster-issuer: "letsencrypt-staging"
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
     hosts:
       - host: "api-digitalmuse.edwardnunez.io"
         paths:

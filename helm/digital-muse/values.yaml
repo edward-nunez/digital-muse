@@ -7,21 +7,25 @@ global:
   environment: production
   domain: "your-domain.com"
   apiUrl: "https://api.your-domain.com"
+  appVersion: ""  # Leave empty to use individual image tags, or set (e.g., "v1.2.0") to override both client and server
 
 # Client subchart
 client:
   enabled: true
   image:
     repository: docker.io/dotrollen/digitalmuse
-    tag: "v1.0.0-client"
+    tag: "v1.0.1-client"  # Override: set global.appVersion (e.g., "v1.2.0") to use "v1.2.0-client"
     pullPolicy: IfNotPresent
+  
+  imagePullSecrets:
+    - name: dockerhub-secret
   
   replicaCount: 2
   
   service:
     type: LoadBalancer
     port: 80
-    targetPort: 80
+    targetPort: 8080
   
   ingress:
     enabled: true
@@ -57,8 +61,11 @@ server:
   enabled: true
   image:
     repository: docker.io/dotrollen/digitalmuse
-    tag: "v1.0.0-server"
+    tag: "v1.0.0-server"  # Override: set global.appVersion (e.g., "v1.2.0") to use "v1.2.0-server"
     pullPolicy: IfNotPresent
+  
+  imagePullSecrets:
+    - name: dockerhub-secret
   
   replicaCount: 2
   
