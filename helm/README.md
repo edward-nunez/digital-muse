@@ -25,7 +25,7 @@ kubectl create namespace digital-muse
 
 # Replace with your actual Digital Ocean Valkey connection string
 kubectl create secret generic digitalmuse-redis-url \
-  --from-literal=redis-url="valkey://:your-password@your-hostname:25061" \
+  --from-literal=redis-url="rediss://default:your-password@your-hostname:25061" \
   -n digital-muse
 
 kubectl create secret generic digitalmuse-session-secret \
@@ -156,8 +156,9 @@ kubectl scale deployment/digital-muse-server --replicas=5 -n digital-muse
 ```bash
 helm upgrade digital-muse ./digital-muse \
   -n digital-muse \
-  --set client.image.tag=v1.1.0-client \
-  --set server.image.tag=v1.1.0-server
+  --set client.image.tag=v1.0.1-client \
+  --set server.image.tag=v1.0.1-server
+  -f values-development.yaml
 ```
 
 ### Rollback to Previous Version
